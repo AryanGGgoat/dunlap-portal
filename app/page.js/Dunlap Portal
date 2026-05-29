@@ -1,0 +1,610 @@
+import { useState, useEffect } from "react";
+
+export default function StudentStudyHub() {
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [username, setUsername] = useState("");
+  const [loginInput, setLoginInput] = useState("");
+  const [flashcards, setFlashcards] = useState([
+    {
+      question: "What is slope?",
+      answer: "Rise over run"
+    }
+  ]);
+  const [newQuestion, setNewQuestion] = useState("");
+  const [newAnswer, setNewAnswer] = useState("");
+  const [selectedFlashcard, setSelectedFlashcard] = useState(null);
+  const [xp, setXp] = useState(2450);
+  const [level, setLevel] = useState(12);
+  const [calendarView] = useState([
+    "DMS Algebra Quiz - Monday",
+    "DMS Science Lab - Wednesday",
+    "DMS History Essay - Friday",
+    "DMS Spirit Day - Thursday",
+    "Basketball Tryouts - Tuesday"
+  ]);
+  const [notes, setNotes] = useState("");
+  const [attendance] = useState(98);
+  const [gpa] = useState(3.9);
+  const [practiceQuestions] = useState([
+    {
+      question: "What is 5x + 2 = 17?",
+      answer: "x = 3"
+    }
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatMessages, setChatMessages] = useState([
+    {
+      role: "assistant",
+      text: "Hi! I'm your AI study assistant. Ask me homework questions."
+    }
+  ]);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("studyhub-user");
+    const savedTasks = localStorage.getItem("studyhub-tasks");
+    const savedFlashcards = localStorage.getItem("studyhub-flashcards");
+
+    if (savedUser) {
+      setUsername(savedUser);
+      setIsSignedIn(true);
+    }
+
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
+    }
+
+    if (savedFlashcards) {
+      setFlashcards(JSON.parse(savedFlashcards));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("studyhub-tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem("studyhub-flashcards", JSON.stringify(flashcards));
+  }, [flashcards]);
+  const [selectedSubject, setSelectedSubject] = useState("DMS Algebra Honors 1");
+  const [taskInput, setTaskInput] = useState("");
+  const [tasks, setTasks] = useState([
+    "Finish DMS Algebra worksheet",
+    "Study DMS Spanish vocabulary",
+    "Read DMS History chapter 5",
+    "Complete English reading log"
+  ]);
+
+  const subjects = [
+    {
+      name: "DMS Algebra Honors 1",
+      icon: "📘",
+      description: "Solve equations, graph functions, and review formulas.",
+      lessons: ["Linear Equations", "Slope", "Quadratics"]
+    },
+    {
+      name: "DMS Science",
+      icon: "🧪",
+      description: "Study biology, chemistry, and physics.",
+      lessons: ["Atoms", "Cells", "Energy"]
+    },
+    {
+      name: "DMS History",
+      icon: "🏛️",
+      description: "Learn timelines, wars, and civilizations.",
+      lessons: ["Ancient Rome", "World War II", "Industrial Revolution"]
+    },
+    {
+      name: "DMS French",
+      icon: "🇫🇷",
+      description: "Practice speaking, grammar, and vocabulary.",
+      lessons: ["Greetings", "Verbs", "Conversations"]
+    },
+    {
+      name: "DMS Spanish",
+      icon: "🇪🇸",
+      description: "Improve fluency with vocabulary and quizzes.",
+      lessons: ["Numbers", "Grammar", "Pronunciation"]
+    },
+    {
+      name: "DMS English & Literature",
+      icon: "📚",
+      description: "Analyze books and improve essay writing.",
+      lessons: ["Grammar", "Essay Writing", "Poetry"]
+    }
+  ];
+
+  const currentSubject = subjects.find(
+    (subject) => subject.name === selectedSubject
+  );
+
+  const addTask = () => {
+    if (!taskInput.trim()) return;
+    setTasks([...tasks, taskInput]);
+    setTaskInput("");
+  };
+
+  const signIn = () => {
+    if (!loginInput.trim()) return;
+
+    localStorage.setItem("studyhub-user", loginInput);
+    setUsername(loginInput);
+    setIsSignedIn(true);
+  };
+
+  const addFlashcard = () => {
+    if (!newQuestion || !newAnswer) return;
+
+    setFlashcards([
+      ...flashcards,
+      {
+        question: newQuestion,
+        answer: newAnswer
+      }
+    ]);
+
+    setNewQuestion("");
+    setNewAnswer("");
+  };
+
+  const askAI = () => {
+    if (!chatInput.trim()) return;
+
+    const userMessage = {
+      role: "user",
+      text: chatInput
+    };
+
+    const aiMessage = {
+      role: "assistant",
+      text:
+        "I can help explain concepts, create quizzes, summarize notes, and guide you through homework problems."
+    };
+
+    setChatMessages([...chatMessages, userMessage, aiMessage]);
+    setChatInput("");
+  };
+
+  if (!isSignedIn) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6 text-white">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-10 max-w-md w-full shadow-2xl">
+          <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            Dunlap Middle School Student Portal
+          </h1>
+
+          <p className="text-zinc-400 mb-6">
+            Sign in to save grades, flashcards, homework, and study progress.
+          </p>
+
+          <input
+            value={loginInput}
+            onChange={(e) => setLoginInput(e.target.value)}
+            placeholder="Enter username"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-4 py-4 outline-none mb-4"
+          />
+
+          <button
+            onClick={signIn}
+            className="w-full bg-cyan-500 text-black py-4 rounded-2xl font-black hover:scale-105 transition"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-zinc-950 text-white p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-10 gap-4 flex-wrap">
+          <div>
+            <h1 className="text-6xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
+              Dunlap Middle School Student Portal
+            </h1>
+            <p className="text-zinc-400 text-lg max-w-3xl">
+              Welcome back, {username}. Your Dunlap Middle School classes, assignments, grades, and study progress are being saved automatically.
+            </p>
+          </div>
+
+          <button
+            onClick={() => {
+              localStorage.removeItem("studyhub-user");
+              setIsSignedIn(false);
+            }}
+            className="bg-red-500 text-white px-5 py-3 rounded-2xl font-bold hover:scale-105 transition"
+          >
+            Sign Out
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-3xl p-6 text-black shadow-2xl">
+            <h2 className="text-2xl font-black mb-3">⭐ XP & Levels</h2>
+            <div className="text-5xl font-black">Lv. {level}</div>
+            <div className="mt-2 text-lg font-semibold">{xp} XP Earned</div>
+          </div>
+
+          <div className="bg-gradient-to-br from-emerald-400 to-green-600 rounded-3xl p-6 text-black shadow-2xl">
+            <h2 className="text-2xl font-black mb-3">🎓 GPA</h2>
+            <div className="text-6xl font-black">{gpa}</div>
+            <div className="font-semibold text-lg mt-2">
+              DMS Honor Roll Status
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-pink-400 to-rose-500 rounded-3xl p-6 text-black shadow-2xl">
+            <h2 className="text-2xl font-black mb-3">📅 Attendance</h2>
+            <div className="text-6xl font-black">{attendance}%</div>
+            <div className="font-semibold text-lg mt-2">
+              Excellent Attendance
+            </div>
+          </div>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+            <h2 className="text-2xl font-bold mb-4">📊 Grades</h2>
+
+            <div className="space-y-4">
+              <div className="bg-zinc-800 rounded-2xl p-4">
+                <div className="flex justify-between mb-2">
+                  <span>Algebra Honors 1</span>
+                  <span className="font-bold">A</span>
+                </div>
+                <div className="text-sm text-zinc-400">Current Grade: 96%</div>
+              </div>
+
+              <div className="bg-zinc-800 rounded-2xl p-4">
+                <div className="flex justify-between mb-2">
+                  <span>Science</span>
+                  <span className="font-bold">A-</span>
+                </div>
+                <div className="text-sm text-zinc-400">Current Grade: 91%</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+            <h2 className="text-2xl font-bold mb-4">⚖️ Process vs Product</h2>
+
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between mb-1 text-sm">
+                  <span>Process (Homework/Classwork)</span>
+                  <span>20%</span>
+                </div>
+                <div className="w-full h-4 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="bg-cyan-500 h-full w-[20%]" />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between mb-1 text-sm">
+                  <span>Product (Tests/Projects)</span>
+                  <span>80%</span>
+                </div>
+                <div className="w-full h-4 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="bg-purple-500 h-full w-[80%]" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl p-6 text-black shadow-2xl">
+            <h2 className="text-2xl font-black mb-4">🔥 Study Streak</h2>
+            <div className="text-6xl font-black mb-2">14</div>
+            <p className="font-semibold text-lg">Days in a row studying at Dunlap Middle School</p>
+          </div>
+        </div>
+
+        <div className="text-center mb-10">
+          <h1 className="text-6xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
+            Dunlap Middle School Student Portal
+          </h1>
+          <p className="text-zinc-400 text-lg max-w-3xl mx-auto">
+            The official Dunlap Middle School learning portal with grades, homework tracking, AI tutoring, flashcards, class dashboards, and student study tools.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          
+          <div className="bg-zinc-900 rounded-3xl border border-zinc-800 p-5 lg:col-span-1">
+            <h2 className="text-2xl font-bold mb-5">📚 Subjects</h2>
+
+            <div className="space-y-3">
+              {subjects.map((subject, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedSubject(subject.name)}
+                  className={`w-full rounded-2xl p-4 text-left transition-all duration-300 border ${
+                    selectedSubject === subject.name
+                      ? "bg-cyan-500 text-black border-cyan-300"
+                      : "bg-zinc-800 border-zinc-700 hover:bg-zinc-700"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{subject.icon}</span>
+                    <div>
+                      <div className="font-semibold">{subject.name}</div>
+                      <div className="text-xs opacity-80">
+                        Open class dashboard
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-2 bg-zinc-900 rounded-3xl border border-zinc-800 p-6 shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-zinc-800 rounded-2xl p-4 border border-zinc-700">
+                <div className="text-sm text-zinc-400 mb-2">DMS Assignments Done</div>
+                <div className="text-4xl font-black">38</div>
+              </div>
+
+              <div className="bg-zinc-800 rounded-2xl p-4 border border-zinc-700">
+                <div className="text-sm text-zinc-400 mb-2">DMS Study Hours</div>
+                <div className="text-4xl font-black">124</div>
+              </div>
+
+              <div className="bg-zinc-800 rounded-2xl p-4 border border-zinc-700">
+                <div className="text-sm text-zinc-400 mb-2">DMS Flashcards Made</div>
+                <div className="text-4xl font-black">{flashcards.length}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 mb-6">
+              <div className="text-6xl">{currentSubject.icon}</div>
+              <div>
+                <h2 className="text-4xl font-bold">
+                  {currentSubject.name}
+                </h2>
+                <p className="text-zinc-400 mt-2 max-w-xl">
+                  {currentSubject.description}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              {currentSubject.lessons.map((lesson, index) => (
+                <div
+                  key={index}
+                  className="bg-zinc-800 rounded-2xl p-5 border border-zinc-700 hover:scale-105 transition"
+                >
+                  <h3 className="font-bold text-lg mb-2">Lesson {index + 1}</h3>
+                  <p className="text-zinc-300">{lesson}</p>
+                  <button className="mt-4 bg-white text-black px-4 py-2 rounded-xl text-sm font-semibold hover:bg-zinc-200 transition">
+                    Start Lesson
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-3xl p-6 text-black">
+              <h3 className="text-3xl font-black mb-3">🤖 AI Study Assistant</h3>
+              <p className="font-medium mb-4">
+                Ask questions, summarize notes, generate quizzes, and get help
+                with homework.
+              </p>
+
+              <div className="flex gap-3">
+                <input
+                  placeholder="Ask anything about this subject..."
+                  className="flex-1 rounded-2xl px-4 py-3 bg-white text-black outline-none"
+                />
+
+                <button className="bg-black text-white px-6 rounded-2xl font-bold hover:scale-105 transition">
+                  Ask AI
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-zinc-900 rounded-3xl border border-zinc-800 p-6">
+            <h2 className="text-2xl font-bold mb-5">✅ Homework</h2>
+
+            <div className="flex gap-2 mb-5">
+              <input
+                value={taskInput}
+                onChange={(e) => setTaskInput(e.target.value)}
+                placeholder="Add homework..."
+                className="flex-1 bg-zinc-800 rounded-2xl px-4 py-3 outline-none border border-zinc-700"
+              />
+
+              <button
+                onClick={addTask}
+                className="bg-cyan-500 text-black px-5 rounded-2xl font-bold hover:scale-105 transition"
+              >
+                Add
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {tasks.map((task, index) => (
+                <div
+                  key={index}
+                  className="bg-zinc-800 border border-zinc-700 rounded-2xl p-4 flex items-center justify-between"
+                >
+                  <span>{task}</span>
+
+                  <button
+                    onClick={() =>
+                      setTasks(tasks.filter((_, i) => i !== index))
+                    }
+                    className="text-red-400 hover:text-red-300"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 bg-zinc-800 rounded-3xl p-5 border border-zinc-700">
+              <h3 className="text-xl font-bold mb-4">🧠 Flashcards</h3>
+
+              {selectedFlashcard !== null && (
+                <div className="bg-cyan-500 text-black rounded-2xl p-5 mb-5">
+                  <div className="font-black text-lg mb-2">Flashcard Preview</div>
+                  <div className="mb-2">
+                    Q: {flashcards[selectedFlashcard].question}
+                  </div>
+                  <div>
+                    A: {flashcards[selectedFlashcard].answer}
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-3 mb-5">
+                {flashcards.map((card, index) => (
+                  <div
+                    key={index}
+                    className="bg-zinc-900 rounded-2xl p-4 border border-zinc-700 cursor-pointer hover:scale-[1.02] transition" onClick={() => setSelectedFlashcard(index)}
+                  >
+                    <div className="font-semibold mb-2">Q: {card.question}</div>
+                    <div className="text-zinc-400">A: {card.answer}</div>
+                  </div>
+                ))}
+              </div>
+
+              <input
+                value={newQuestion}
+                onChange={(e) => setNewQuestion(e.target.value)}
+                placeholder="Flashcard question"
+                className="w-full mb-3 bg-zinc-900 rounded-2xl px-4 py-3 border border-zinc-700 outline-none"
+              />
+
+              <input
+                value={newAnswer}
+                onChange={(e) => setNewAnswer(e.target.value)}
+                placeholder="Flashcard answer"
+                className="w-full mb-3 bg-zinc-900 rounded-2xl px-4 py-3 border border-zinc-700 outline-none"
+              />
+
+              <button
+                onClick={addFlashcard}
+                className="w-full bg-cyan-500 text-black py-3 rounded-2xl font-bold hover:scale-105 transition"
+              >
+                Create Flashcard
+              </button>
+            </div>
+
+            <div className="mt-8 bg-zinc-800 rounded-3xl p-5 border border-zinc-700">
+              <h3 className="text-xl font-bold mb-4">📝 Practice Test</h3>
+
+              <div className="space-y-3">
+                {practiceQuestions.map((question, index) => (
+                  <div
+                    key={index}
+                    className="bg-zinc-900 rounded-2xl p-4 border border-zinc-700 cursor-pointer hover:scale-[1.02] transition" onClick={() => setSelectedFlashcard(index)}
+                  >
+                    <div className="font-semibold mb-3">{question.question}</div>
+
+                    <input
+                      placeholder="Type your answer..."
+                      className="w-full bg-zinc-800 rounded-xl px-3 py-2 outline-none"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8 bg-zinc-800 rounded-3xl p-5 border border-zinc-700">
+              <h3 className="text-xl font-bold mb-4">📝 Notes</h3>
+
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Write and save study notes here..."
+                className="w-full h-40 bg-zinc-900 rounded-2xl p-4 border border-zinc-700 outline-none resize-none"
+              />
+            </div>
+
+            <div className="mt-8 bg-zinc-800 rounded-3xl p-5 border border-zinc-700">
+              <h3 className="text-xl font-bold mb-4">📆 Upcoming Schedule</h3>
+
+              <div className="space-y-3">
+                {calendarView.map((event, index) => (
+                  <div
+                    key={index}
+                    className="bg-zinc-900 rounded-2xl p-4 border border-zinc-700"
+                  >
+                    {event}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8 bg-zinc-800 rounded-3xl p-5 border border-zinc-700">
+              <h3 className="text-xl font-bold mb-4">💬 AI Chat</h3>
+
+              <div className="space-y-3 max-h-64 overflow-y-auto mb-4">
+                {chatMessages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`rounded-2xl p-3 ${
+                      message.role === "assistant"
+                        ? "bg-cyan-500 text-black"
+                        : "bg-zinc-900"
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Ask the AI tutor..."
+                  className="flex-1 bg-zinc-900 rounded-2xl px-4 py-3 border border-zinc-700 outline-none"
+                />
+
+                <button
+                  onClick={askAI}
+                  className="bg-cyan-500 text-black px-5 rounded-2xl font-bold hover:scale-105 transition"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-8 bg-zinc-800 rounded-3xl p-5 border border-zinc-700">
+              <h3 className="text-xl font-bold mb-4">📈 Study Progress</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Math</span>
+                    <span>82%</span>
+                  </div>
+                  <div className="w-full h-3 bg-zinc-700 rounded-full overflow-hidden">
+                    <div className="bg-blue-500 h-full w-[82%]" />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Science</span>
+                    <span>65%</span>
+                  </div>
+                  <div className="w-full h-3 bg-zinc-700 rounded-full overflow-hidden">
+                    <div className="bg-green-500 h-full w-[65%]" />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Languages</span>
+                    <span>91%</span>
+                  </div>
+                  <div className="w-full h-3 bg-zinc-700 rounded-full overflow-hidden">
+                    <div className="bg-pink-500 h-full w-[91%]" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
